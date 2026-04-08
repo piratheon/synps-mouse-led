@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/bin/synps-led-daemon

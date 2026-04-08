@@ -1,5 +1,5 @@
---- a/drivers/input/mouse/synaptics.c	2026-04-07 22:44:09.110380797 +0000
-+++ b/drivers/input/mouse/synaptics.c	2026-04-07 22:46:50.432048053 +0000
+--- a/drivers/input/mouse/synaptics.c	2026-04-08 12:31:17.223831588 +0000
++++ b/drivers/input/mouse/synaptics.c	2026-04-08 12:35:17.369332769 +0000
 @@ -26,6 +26,7 @@
  #include <linux/input/mt.h>
  #include <linux/serio.h>
@@ -8,7 +8,7 @@
  #include <linux/rmi.h>
  #include <linux/i2c.h>
  #include <linux/slab.h>
-@@ -765,6 +766,141 @@
+@@ -731,6 +732,141 @@
  	serio_register_port(serio);
  }
  
@@ -150,7 +150,7 @@
  /*****************************************************************************
   *	Functions to interpret the absolute mode packets
   ****************************************************************************/
-@@ -1451,6 +1587,7 @@
+@@ -1418,6 +1554,7 @@
  		device_remove_file(&psmouse->ps2dev.serio->dev,
  				   &psmouse_attr_disable_gesture.dattr);
  
@@ -158,7 +158,7 @@
  	synaptics_reset(psmouse);
  	kfree(priv);
  	psmouse->private = NULL;
-@@ -1511,6 +1648,8 @@
+@@ -1478,6 +1615,8 @@
  		return -ENXIO;
  	}
  
@@ -167,7 +167,7 @@
  	return 0;
  }
  
-@@ -1629,6 +1768,9 @@
+@@ -1596,6 +1735,9 @@
  		     info->capabilities, info->ext_cap, info->ext_cap_0c,
  		     info->ext_cap_10, info->board_id, info->firmware_id);
  
@@ -177,18 +177,9 @@
  	err = set_input_params(psmouse, priv);
  	if (err) {
  		psmouse_err(psmouse,
---- a/drivers/input/mouse/synaptics.h	2026-04-07 22:44:10.105391071 +0000
-+++ b/drivers/input/mouse/synaptics.h	2026-04-07 22:47:22.419378933 +0000
-@@ -177,6 +177,8 @@
- 	u32 x_min, y_min;	/* Min coordinates (from FW) */
- };
- 
-+struct synaptics_led;
-+
- struct synaptics_data {
- 	struct synaptics_device_info info;
- 
-@@ -202,6 +204,7 @@
+--- a/drivers/input/mouse/synaptics.h
++++ b/drivers/input/mouse/synaptics.h
+@@ -203,6 +203,7 @@ struct synaptics_data {
  	bool					press;
  	bool					report_press;
  	bool					is_forcepad;
@@ -196,21 +187,3 @@
  };
  
  void synaptics_module_init(void);
---- a/drivers/input/mouse/Kconfig	2026-04-07 22:48:30.199080305 +0000
-+++ b/drivers/input/mouse/Kconfig	2026-04-07 22:48:03.058799424 +0000
-@@ -91,6 +91,15 @@
- 
- 	  If unsure, say Y.
- 
-+config MOUSE_PS2_SYNAPTICS_LED
-+	bool "Support embedded LED on Synaptics devices"
-+	default y
-+	depends on MOUSE_PS2_SYNAPTICS
-+	depends on LEDS_CLASS=y || LEDS_CLASS=MOUSE_PS2
-+	help
-+	  Say Y here if you have a Synaptics device with an embedded LED.
-+	  This will enable LED class driver to control the LED device.
-+
- config MOUSE_PS2_CYPRESS
- 	bool "Cypress PS/2 mouse protocol extension" if EXPERT
- 	default y

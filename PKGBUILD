@@ -34,13 +34,21 @@ source=(
 	kernel.patch
 	synps-led-daemon.c
 	synps-led-daemon.service
+	synps-led-daemon.openrc
+	synps-led-daemon.runit
+	synps-led-daemon.sysvinit
+	install.sh
 )
 
-sha256sums=('5c240c5a291f96d35dd1f43e46acb80591f7eda70733958000faccf1434b2791'
-            'c635cc3b1d13695a0d650e3da0c0794efd97cd3402120425c4a18aaeabff7ae5'
-            'f83d59206344448e5fe3ce57e72660eb8daef26ca7a64b392c7f810faf0c55e4'
-            '65a414290d3168ea489775391d6492b67963d2cb41eea18dc57966a4254e360e'
-            'cd3bb83bb87a775d9faf21be065d9f8ebf389a7c11b8c8d2f0b4360f0c6b505f')
+sha256sums=('SKIP'
+            'SKIP'
+            '08ed5a16acf218b4c2263b2db44053c8dcca9fca9777902c5f0ba75b9aa603e2'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP')
 
 build() {
 	msg2 "Module will be installed to: $_EXTRAMODULES"
@@ -75,6 +83,18 @@ package() {
 
 	# Install systemd service
 	install -D -m 0644 "${srcdir}/synps-led-daemon.service" "${pkgdir}/usr/lib/systemd/system/synps-led-daemon.service"
+
+	# Install OpenRC service
+	install -D -m 0755 "${srcdir}/synps-led-daemon.openrc" "${pkgdir}/etc/init.d/synps-led-daemon"
+
+	# Install runit service
+	install -D -m 0755 "${srcdir}/synps-led-daemon.runit" "${pkgdir}/etc/runit/sv/synps-led-daemon/run"
+
+	# Install sysvinit service
+	install -D -m 0755 "${srcdir}/synps-led-daemon.sysvinit" "${pkgdir}/etc/init.d/synps-led-daemon-sysvinit"
+
+	# Install standalone install script for non-Arch users
+	install -D -m 0755 "${srcdir}/install.sh" "${pkgdir}/usr/share/synps-mouse-led/install.sh"
 
 	# if you have not one kernel installed and _EXTRAMODULES not proper detected:
 	# you should change install string for EXTRAMODULES manualy:

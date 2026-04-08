@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+description="Synaptics LED toggle daemon"
+
+depend() {
+	need localmount
+	after bootmisc
+}
+
+start() {
+	ebegin "Starting synps-led-daemon"
+	start-stop-daemon --start --background --exec /usr/bin/synps-led-daemon
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping synps-led-daemon"
+	start-stop-daemon --stop --exec /usr/bin/synps-led-daemon
+	eend $?
+}
