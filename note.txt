@@ -1,0 +1,11 @@
+      1 # Check kernel log for LED detection messages
+      2 dmesg | grep synaptics
+      3
+      4 # Check if the LED device appeared
+      5 ls /sys/class/leds/psmouse::synaptics/
+      6
+      7 # Try turning it on
+      8 echo 1 | sudo tee /sys/class/leds/psmouse::synaptics/brightness
+      9
+     10 # Turn it off
+     11 echo 0 | sudo tee /sys/class/leds/psmouse::synaptics/brightness

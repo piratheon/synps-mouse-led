@@ -1,25 +1,5 @@
-diff -ur old/drivers/input/mouse/Kconfig new/drivers/input/mouse/Kconfig
---- old/drivers/input/mouse/Kconfig
-+++ new/drivers/input/mouse/Kconfig
-@@ -101,6 +101,15 @@
- 
- 	  If unsure, say Y.
- 
-+config MOUSE_PS2_SYNAPTICS_LED
-+	bool "Support embedded LED on Synaptics devices"
-+	default y
-+	depends on MOUSE_PS2_SYNAPTICS
-+	depends on LEDS_CLASS=y || LEDS_CLASS=MOUSE_PS2
-+	help
-+	  Say Y here if you have a Synaptics device with an embedded LED.
-+	  This will enable LED class driver to control the LED device.
-+
- config MOUSE_PS2_LIFEBOOK
- 	bool "Fujitsu Lifebook PS/2 mouse protocol extension" if EXPERT
- 	default y
-diff -ur old/drivers/input/mouse/synaptics.c new/drivers/input/mouse/synaptics.c
---- old/drivers/input/mouse/synaptics.c
-+++ new/drivers/input/mouse/synaptics.c
+--- a/drivers/input/mouse/synaptics.c	2026-04-07 22:44:09.110380797 +0000
++++ b/drivers/input/mouse/synaptics.c	2026-04-07 22:46:50.432048053 +0000
 @@ -26,6 +26,7 @@
  #include <linux/input/mt.h>
  #include <linux/serio.h>
@@ -28,7 +8,7 @@ diff -ur old/drivers/input/mouse/synaptics.c new/drivers/input/mouse/synaptics.c
  #include <linux/rmi.h>
  #include <linux/i2c.h>
  #include <linux/slab.h>
-@@ -728,6 +729,141 @@
+@@ -765,6 +766,141 @@
  	serio_register_port(serio);
  }
  
@@ -106,7 +86,7 @@ diff -ur old/drivers/input/mouse/synaptics.c new/drivers/input/mouse/synaptics.c
 +	 */
 +
 +	if (SYN_CAP_PRODUCT_ID(priv->info.ext_cap) != 0x24 &&
-+       SYN_CAP_PRODUCT_ID(priv->info.ext_cap) != 0xe4 &&
++	    SYN_CAP_PRODUCT_ID(priv->info.ext_cap) != 0xe4 &&
 +	    SYN_CAP_PRODUCT_ID(priv->info.ext_cap) != 0x64 &&
 +	    SYN_CAP_PRODUCT_ID(priv->info.ext_cap) != 0x84) {
 +		printk(KERN_NOTICE "synaptics: led: your product ID is not in the whitelist\n");
@@ -170,7 +150,7 @@ diff -ur old/drivers/input/mouse/synaptics.c new/drivers/input/mouse/synaptics.c
  /*****************************************************************************
   *	Functions to interpret the absolute mode packets
   ****************************************************************************/
-@@ -1415,6 +1551,7 @@
+@@ -1451,6 +1587,7 @@
  		device_remove_file(&psmouse->ps2dev.serio->dev,
  				   &psmouse_attr_disable_gesture.dattr);
  
@@ -178,7 +158,7 @@ diff -ur old/drivers/input/mouse/synaptics.c new/drivers/input/mouse/synaptics.c
  	synaptics_reset(psmouse);
  	kfree(priv);
  	psmouse->private = NULL;
-@@ -1475,6 +1612,8 @@
+@@ -1511,6 +1648,8 @@
  		return -ENXIO;
  	}
  
@@ -187,7 +167,7 @@ diff -ur old/drivers/input/mouse/synaptics.c new/drivers/input/mouse/synaptics.c
  	return 0;
  }
  
-@@ -1593,6 +1732,9 @@
+@@ -1629,6 +1768,9 @@
  		     info->capabilities, info->ext_cap, info->ext_cap_0c,
  		     info->ext_cap_10, info->board_id, info->firmware_id);
  
@@ -197,9 +177,8 @@ diff -ur old/drivers/input/mouse/synaptics.c new/drivers/input/mouse/synaptics.c
  	err = set_input_params(psmouse, priv);
  	if (err) {
  		psmouse_err(psmouse,
-diff -ur old/drivers/input/mouse/synaptics.h new/drivers/input/mouse/synaptics.h
---- old/drivers/input/mouse/synaptics.h
-+++ new/drivers/input/mouse/synaptics.h
+--- a/drivers/input/mouse/synaptics.h	2026-04-07 22:44:10.105391071 +0000
++++ b/drivers/input/mouse/synaptics.h	2026-04-07 22:47:22.419378933 +0000
 @@ -177,6 +177,8 @@
  	u32 x_min, y_min;	/* Min coordinates (from FW) */
  };
@@ -209,11 +188,29 @@ diff -ur old/drivers/input/mouse/synaptics.h new/drivers/input/mouse/synaptics.h
  struct synaptics_data {
  	struct synaptics_device_info info;
  
-@@ -201,6 +203,7 @@
+@@ -202,6 +204,7 @@
  	bool					press;
  	bool					report_press;
  	bool					is_forcepad;
-+	struct synaptics_led *led;
++	struct synaptics_led			*led;
  };
  
  void synaptics_module_init(void);
+--- a/drivers/input/mouse/Kconfig	2026-04-07 22:48:30.199080305 +0000
++++ b/drivers/input/mouse/Kconfig	2026-04-07 22:48:03.058799424 +0000
+@@ -91,6 +91,15 @@
+ 
+ 	  If unsure, say Y.
+ 
++config MOUSE_PS2_SYNAPTICS_LED
++	bool "Support embedded LED on Synaptics devices"
++	default y
++	depends on MOUSE_PS2_SYNAPTICS
++	depends on LEDS_CLASS=y || LEDS_CLASS=MOUSE_PS2
++	help
++	  Say Y here if you have a Synaptics device with an embedded LED.
++	  This will enable LED class driver to control the LED device.
++
+ config MOUSE_PS2_CYPRESS
+ 	bool "Cypress PS/2 mouse protocol extension" if EXPERT
+ 	default y

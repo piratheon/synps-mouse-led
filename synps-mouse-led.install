@@ -1,0 +1,13 @@
+post_install() {
+	depmod
+	systemctl enable --now synps-led-daemon.service 2>/dev/null || true
+}
+
+post_upgrade() {
+	post_install
+}
+
+post_remove() {
+	systemctl disable --now synps-led-daemon.service 2>/dev/null || true
+	post_install
+}
